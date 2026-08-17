@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PPT Viewer</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+        .slide {
+            display: none;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .slide.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <img src="assets/001.jpg" class="slide active" alt="Slide 1">
+    <img src="assets/002.jpg" class="slide" alt="Slide 2">
+
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        let currentSlide = 0;
+
+        function showSlide(index) {
+            slides[currentSlide].classList.remove('active');
+            
+            // Limit index to bounds so it doesn't loop infinitely like a carousel unless desired.
+            // For a PPT, stopping at first/last slide is common, but looping is also okay.
+            // Let's implement clamp to bounds:
+            if (index >= slides.length) index = slides.length - 1;
+            if (index < 0) index = 0;
+            
+            currentSlide = index;
+            slides[currentSlide].classList.add('active');
+        }
+
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+
+        function prevSlide() {
+            showSlide(currentSlide - 1);
+        }
+
+        // Screen click logic: left half = prev, right half = next
+        document.body.addEventListener('click', (e) => {
+            const width = window.innerWidth;
+            if (e.clientX > width / 2) {
+                nextSlide();
+            } else {
+                prevSlide();
+            }
+        });
+
+        // Keyboard logic
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ' || e.key === 'PageDown') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') {
+                prevSlide();
+            } else if (e.key === 'Home') {
+                showSlide(0);
+            } else if (e.key === 'End') {
+                showSlide(slides.length - 1);
+            }
+        });
+    </script>
+</body>
+</html>
